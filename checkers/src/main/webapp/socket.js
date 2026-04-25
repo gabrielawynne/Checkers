@@ -58,6 +58,13 @@ connection.onmessage = function (msg) {
         swapToPage("login"); //added this to init display for login for every client connection
         return;
     }
+    if (jsonMsg.playerRed && jsonMsg.playerBlack) {
+        window.playerRed = jsonMsg.playerRed;
+        window.playerBlack = jsonMsg.playerBlack;
+        if (typeof updatePlayerTurn === 'function') {
+            updatePlayerTurn();
+        }
+    }
     
     
     if (!responseID) {

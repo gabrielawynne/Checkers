@@ -846,12 +846,20 @@ public class PageManager {
     }
 
     private static Cord codeToCord(String code) {
-        //"R2-C6" as in Row 2 Col 6
-        
-        int y = Integer.parseInt(code.substring(1,2)); // Row is Y
-        int x = Integer.parseInt(code.substring(4,5)); // Col is X
-        Cord c = new Cord(x, y);
-        return c;
+        try {
+            if (code != null && code.length() >= 5 && code.charAt(0) == 'R' && code.charAt(2) == '-' && code.charAt(3) == 'C') {
+                int y = Integer.parseInt(code.substring(1, 2)); // Row is Y
+                int x = Integer.parseInt(code.substring(4, 5)); // Col is X
+                return new Cord(x, y);
+            } else {
+                System.out.println("Invalid format for code: " + code);
+                return null;
+            }
+        } catch (Exception e) {
+            System.out.println("Error parsing codeToCord: " + code);
+            e.printStackTrace();
+            return null;
+        }
     }
 
      public void EndGameNotifier(int UserId, GamePlay gs){
@@ -1001,6 +1009,17 @@ public class PageManager {
    // Transition all given clients to a new game state and notify them
     public UserEventReply transitionPage(List<Integer> clientIds, GameState newState) {
         JsonObject response = new JsonObject();
+        if (clientIds.size() >= 2) {
+            HumanPlayer red = activePlayers.get(clientIds.get(0));
+            HumanPlayer black = activePlayers.get(clientIds.get(1));
+        
+            if (red != null) {
+                response.addProperty("playerRed", red.getUsername());
+            }
+            if (black != null) {
+                response.addProperty("playerBlack", black.getUsername());
+            }
+        }
         response.addProperty("responseID", "updateVisibility");
         response.addProperty("visible", newState.name().toLowerCase());
 

@@ -39,6 +39,11 @@
 
 package uta.cse3310;
 
+import net.freeutils.httpserver.HTTPServer;
+import net.freeutils.httpserver.HTTPServer.FileContextHandler;
+
+
+import java.io.File;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.util.Collections;
@@ -159,7 +164,7 @@ public class App extends WebSocketServer {
   
   @Override
   public void onMessage(WebSocket conn, String message) {
-
+    System.out.println("Received WebSocket message: " + message);
     // Bring in the data from the webpage
     // At this point, it is known it will be a UserEvent
     // In the future, that will have to be figured out.
@@ -314,7 +319,22 @@ public class App extends WebSocketServer {
 
     // Set up the http server
 
-    HttpServer H = new HttpServer(port, "./src/main/webapp/");
+    System.out.println("==> Serving web files from: " + new File("./checkers/src/main/webapp/").getAbsolutePath());
+
+    HttpServer H = new HttpServer(port, "./checkers/src/main/webapp/");
+
+    File webRoot = new File("./checkers/src/main/webapp/");
+    File indexFile = new File(webRoot, "index.html");
+    System.out.println("==> index.html exists: " + indexFile.exists());
+    System.out.println("==> index.html path: " + indexFile.getAbsolutePath());
+    
+    File[] files = webRoot.listFiles();
+    if (files != null) {
+        for (File f : files) {
+            System.out.println("==> Found: " + f.getName());
+        }
+    }
+    
     H.start();
     System.out.println("http Server started on port: " + port);
     System.out.println("http://localhost:" + port + "/index.html");
